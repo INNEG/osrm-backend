@@ -9,10 +9,13 @@ Feature: Turn Lane Guidance
     Scenario: Separate Turn Lanes
         Given the node map
             """
-                          e
-            a     b       c g
-                          d
-                          f
+                            e
+                            |
+            a - - - b - - - c - g
+                            |
+                            d
+                            |
+                            f
             """
 
         And the ways
