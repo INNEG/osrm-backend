@@ -9,13 +9,10 @@ Feature: Turn Lane Guidance
     Scenario: Separate Turn Lanes
         Given the node map
             """
-                            e
-                            |
-            a - - - b - - - c - g
-                            |
-                            d
-                            |
-                            f
+                          e
+            a --- b ----- c g
+                   \----- d
+                          f
             """
 
         And the ways
@@ -44,8 +41,8 @@ Feature: Turn Lane Guidance
         Given the node map
             """
                           e
-            a     b       c g
-                          d
+            a --- b ----- c-g
+                   \----- d
                           f
             """
 
@@ -75,16 +72,16 @@ Feature: Turn Lane Guidance
         Given the node map
             """
                           e
-            a     b       c g
-                          d
-                          f
-
-
-
-
-
-
-            i     h       j
+            a --- b ----- c g
+                  |\----- d
+                  |       f
+                  |
+                  |
+                  |
+                  |
+                  |
+                  |
+            i --- h ----- j
             """
 
         And the ways
@@ -119,10 +116,10 @@ Feature: Turn Lane Guidance
         Given the node map
             """
                   g   f
-
-            j     h   e
-
-            a     b   c
+                  |   |
+            j --- h - e
+                  |   |
+            a --- b - c
                   i   d
             """
 
