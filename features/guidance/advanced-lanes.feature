@@ -10,7 +10,7 @@ Feature: Turn Lane Guidance
         Given the node map
             """
                           e
-            a --- b ----- c g
+            a --- b ----- c-g
                    \----- d
                           f
             """
@@ -72,7 +72,7 @@ Feature: Turn Lane Guidance
         Given the node map
             """
                           e
-            a --- b ----- c g
+            a --- b ----- c-g
                   |\----- d
                   |       f
                   |
@@ -151,9 +151,9 @@ Feature: Turn Lane Guidance
                           | |
                           | |
                           | |
-                          | | f
-                          | e
-                          d |
+                          | |,f
+                          |,e
+                         ,d |
             a --------- b c |
                        /  | |
                       /   | |
@@ -199,9 +199,9 @@ Feature: Turn Lane Guidance
                           | |
                           | |
                           | |
-                          | | f
-                          | e
-                          d |
+                          | |,f
+                          |,e
+                         ,d |
             a --------- b c |
                        /  | |
                       /   | |

@@ -62,7 +62,7 @@ Feature: Motorway Guidance
     Scenario: Ramp Exit Left
         Given the node map
             """
-               ,--f-g
+               /--f-g
             a-b-c-d-e
             """
 
@@ -132,7 +132,7 @@ Feature: Motorway Guidance
     Scenario: On Ramp Left
         Given the node map
             """
-            f-g---.
+            f-g---,
             a-b-c-d-e
             """
 
@@ -245,7 +245,7 @@ Feature: Motorway Guidance
     Scenario: Handle 90 degree off ramps correctly
         Given the node map
             """
-            a
+            a\
             x-b---c-y
                   d
             """

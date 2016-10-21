@@ -9,7 +9,7 @@ Feature: Continue Instructions
         Given the node map
             """
                 c
-            a - b d
+            a - b-d
             """
 
         And the ways
