@@ -26,7 +26,7 @@ Feature: Continue Instructions
         Given the node map
             """
                 c
-            a - b d
+            a - b-d
             """
 
         And the ways
@@ -43,7 +43,7 @@ Feature: Continue Instructions
         Given the node map
             """
                 c
-            a - b d
+            a - b-d
                 e
             """
 
@@ -62,7 +62,7 @@ Feature: Continue Instructions
     Scenario: Road turning right
         Given the node map
             """
-            a - b d
+            a - b-d
                 c
             """
 
