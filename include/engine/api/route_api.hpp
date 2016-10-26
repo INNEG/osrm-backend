@@ -19,6 +19,7 @@
 
 #include "util/coordinate.hpp"
 #include "util/integer_range.hpp"
+#include "util/debug.hpp"
 
 #include <iterator>
 #include <vector>
@@ -152,6 +153,8 @@ class RouteAPI : public BaseAPI
                  */
 
                 guidance::trimShortSegments(steps, leg_geometry);
+                // TODO: remove before merging
+                util::guidance::print(steps);
                 leg.steps = guidance::postProcess(std::move(steps));
                 leg.steps = guidance::collapseTurns(std::move(leg.steps));
                 leg.steps = guidance::buildIntersections(std::move(leg.steps));

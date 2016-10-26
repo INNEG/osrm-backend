@@ -10,8 +10,11 @@ Feature: Turn Lane Guidance
         Given the node map
             """
                           e
-            a     b       c g
-                          d
+                          .
+            a ... b ..... c . g
+                    `     .
+                     `... d
+                          .
                           f
             """
 
@@ -41,20 +44,20 @@ Feature: Turn Lane Guidance
         Given the node map
             """
                           e
-            a     b       c g
-                          d
+            a . . b . . . c g
+                        ` d
                           f
             """
 
         And the ways
-            | nodes | turn:lanes:forward | name     | oneway |
-            | ab    |                    | in       | yes    |
-            | bc    | left\|through      | in       | yes    |
-            | bd    | right              | in       | yes    |
-            | ec    |                    | cross    | no     |
-            | cd    |                    | cross    | no     |
-            | df    |                    | cross    | no     |
-            | cg    |                    | straight | no     |
+            | nodes | turn:lanes:forward   | name     | oneway |
+            | ab    |                      | in       | yes    |
+            | bc    | left\|through\|right | in       | yes    |
+            | bd    | right                | in       | yes    |
+            | ec    |                      | cross    | no     |
+            | cd    |                      | cross    | no     |
+            | df    |                      | cross    | no     |
+            | cg    |                      | straight | no     |
 
         And the relations
             | type        | way:from | way:to | node:via | restriction   |
@@ -71,17 +74,17 @@ Feature: Turn Lane Guidance
     Scenario: Separate Turn Lanes Next to other turns
         Given the node map
             """
-                          e
-            a     b       c g
-                          d
-                          f
-
-
-
-
-
-
-            i     h       j
+                        . e
+            a . . b . . . c g
+                  .     ` d
+                  .       f
+                  .
+                  .
+                  .
+                  .
+                  .
+                  .
+            i . . h . . . j
             """
 
         And the ways

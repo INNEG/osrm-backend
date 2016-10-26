@@ -32,6 +32,12 @@ class IntersectionGenerator
                           const std::vector<QueryNode> &node_info_list,
                           const CompressedEdgeContainer &compressed_edge_container);
 
+    // For a source node `a` and a via edge `ab` creates an intersection at target `b`.
+    //
+    // a . . . b . .
+    //         .
+    //         .
+    //
     Intersection operator()(const NodeID nid, const EdgeID via_eid) const;
 
     // Graph Compression cannot compress every setting. For example any barrier/traffic light cannot

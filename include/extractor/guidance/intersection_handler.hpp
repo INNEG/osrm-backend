@@ -3,6 +3,7 @@
 
 #include "extractor/guidance/intersection.hpp"
 #include "extractor/guidance/intersection_generator.hpp"
+#include "extractor/guidance/node_based_graph_walker.hpp"
 #include "extractor/query_node.hpp"
 #include "extractor/suffix_table.hpp"
 
@@ -48,6 +49,7 @@ class IntersectionHandler
     const util::NameTable &name_table;
     const SuffixTable &street_name_suffix_table;
     const IntersectionGenerator &intersection_generator;
+    const NodeBasedGraphWalker graph_walker; // for skipping traffic signal, distances etc.
 
     // counts the number on allowed entry roads
     std::size_t countValid(const Intersection &intersection) const;
@@ -83,6 +85,7 @@ class IntersectionHandler
                             const std::size_t begin,
                             const std::size_t end) const;
 
+    // Checks the intersection for a through street connected to `intersection[index]`
     bool isThroughStreet(const std::size_t index, const Intersection &intersection) const;
 };
 

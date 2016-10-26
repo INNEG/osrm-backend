@@ -43,7 +43,7 @@ class NodeBasedGraphWalker
     boost::optional<std::pair<NodeID, EdgeID>> TraverseRoad(NodeID starting_at_node_id,
                                                             EdgeID following_edge_id,
                                                             accumulator_type &accumulator,
-                                                            const selector_type &selector);
+                                                            const selector_type &selector) const;
 
   private:
     const util::NodeBasedDynamicGraph &node_based_graph;
@@ -141,7 +141,7 @@ boost::optional<std::pair<NodeID, EdgeID>>
 NodeBasedGraphWalker::TraverseRoad(NodeID current_node_id,
                                    EdgeID current_edge_id,
                                    accumulator_type &accumulator,
-                                   const selector_type &selector)
+                                   const selector_type &selector) const
 {
     /*
      * since graph hopping is used in many ways, we don't generate an adjusted intersection

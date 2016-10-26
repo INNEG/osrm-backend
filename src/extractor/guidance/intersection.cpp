@@ -10,6 +10,11 @@
 #include <functional>
 #include <limits>
 
+#include <boost/assert.hpp>
+
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/algorithm/find_if.hpp>
+
 namespace osrm
 {
 namespace extractor
@@ -111,6 +116,8 @@ Intersection::getHighestConnectedLaneCount(const util::NodeBasedDynamicGraph &gr
 
     const auto view = *this | boost::adaptors::transformed(to_lane_count);
     boost::range::find_if(view, extract_maximal_value);
+    return max_lanes;
+
     return max_lanes;
 }
 

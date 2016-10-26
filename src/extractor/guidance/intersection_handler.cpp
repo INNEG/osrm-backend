@@ -34,7 +34,8 @@ IntersectionHandler::IntersectionHandler(const util::NodeBasedDynamicGraph &node
                                          const IntersectionGenerator &intersection_generator)
     : node_based_graph(node_based_graph), node_info_list(node_info_list), name_table(name_table),
       street_name_suffix_table(street_name_suffix_table),
-      intersection_generator(intersection_generator)
+      intersection_generator(intersection_generator),
+      graph_walker(node_based_graph, intersection_generator)
 {
 }
 

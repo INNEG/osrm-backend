@@ -701,10 +701,10 @@ Feature: Collapse
         Given the node map
             """
                       g
-
+                      .
                       c
-            a     b
-                        d
+            a . . b .'
+                      ` d.
                         f e
             """
 

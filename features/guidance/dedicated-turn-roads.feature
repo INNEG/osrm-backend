@@ -240,8 +240,8 @@ Feature: Slipways and Dedicated Turn Lanes
             | qe    | secondary_link | Ettlinger Allee    |      | yes    |
 
         When I route I should get
-            | waypoints | route                                                    | turns                    | ref        |
-            | a,o       | Schwarzwaldstrasse,Ettlinger Allee,Ettlinger Allee       | depart,turn right,arrive | L561,L561, |
+            | waypoints | route                                              | turns                    | ref    |
+            | a,o       | Schwarzwaldstrasse,Ettlinger Allee,Ettlinger Allee | depart,turn right,arrive | L561,, |
 
     Scenario: Traffic Lights everywhere
         #http://map.project-osrm.org/?z=18&center=48.995336%2C8.383813&loc=48.995467%2C8.384548&loc=48.995115%2C8.382761&hl=en&alt=0
@@ -431,3 +431,290 @@ Feature: Slipways and Dedicated Turn Lanes
         When I route I should get
             | waypoints | route          | turns                          |
             | a,i       | road,road,road | depart,fork slight left,arrive |
+
+
+    # The following tests are current false positives / false negatives #3199
+
+    @sliproads
+    # http://www.openstreetmap.org/#map=19/52.59847/13.14815
+    Scenario: Sliproad Detection
+        Given the node map
+            """
+            a                            . . .
+              .                         .
+                b  . . . . . .  c . . . d
+                  `             .       .
+                    e           .       .
+                       `        .       .
+                          f     .       .
+                             `  .       .
+                                g       i
+                                   ` h .
+            """
+
+        And the ways
+            | nodes  | highway     | name              |
+            | abefgh | residential | Nachtigallensteig |
+            | bcd    | residential | Kiebitzsteig      |
+            | cg     | residential | Haenflingsteig    |
+            | hid    | residential | Waldkauzsteig     |
+
+       When I route I should get
+            | waypoints | route                                        | turns                   |
+            | a,d       | Nachtigallensteig,Kiebitzsteig,Kiebitzsteig  | depart,turn left,arrive |
+            | a,h       | Nachtigallensteig,Nachtigallensteig          | depart,arrive           |
+
+
+    Scenario: Not a obvious Sliproad
+        Given the node map
+            """
+                    d
+                    .
+          s . a . . b . . c
+                `   .
+                  ` e
+                    .`
+                    .  `
+                    f    g
+            """
+
+        And the ways
+            | nodes | highway | name  |
+            | sabc  | primary | sabc  |
+            | dbef  | primary | dbef  |
+            | aeg   | primary | aeg   |
+
+       When I route I should get
+            | waypoints | route              | turns                               |
+            | s,f       | sabc,aeg,dbef,dbef | depart,turn right,turn right,arrive |
+
+    Scenario: Through Street, not a Sliproad although obvious
+        Given the node map
+            """
+                    d
+                    .
+          s . a . . b . . c
+                `   .
+                  ` e
+                  .  `
+                 .     `
+                f        g
+            """
+
+        And the ways
+            | nodes | highway | name  |
+            | sabc  | primary | sabc  |
+            | dbef  | primary | dbef  |
+            | aeg   | primary | aeg   |
+
+       When I route I should get
+            | waypoints | route              | turns                               |
+            | s,f       | sabc,aeg,dbef,dbef | depart,turn right,turn right,arrive |
+
+    Scenario: Sliproad target turn is restricted
+        Given the node map
+            """
+                        d
+                        .
+          s . a . . . . b . . c
+                `       .
+                   `    .
+                     `  .
+                      ` .
+                      ` .
+                        e
+                        .`
+                        f `
+                        .  ` g
+            """
+
+        And the ways
+            | nodes | highway | name |
+            | sa    | primary | sabc |
+            | abc   | primary | sabc |
+            | dbe   | primary | dbef |
+            | ef    | primary | dbef |
+            | ae    | primary | aeg  |
+            | eg    | primary | aeg  |
+            # the reason we have to split ways at e is that otherwise we can't handle restrictions via e
+
+        And the relations
+            | type        | way:from | way:to | node:via | restriction   |
+            | restriction | ae       | ef     | e        | no_right_turn |
+
+       When I route I should get
+            | waypoints | route          | turns                    |
+            | s,f       | sabc,dbef,dbef | depart,turn right,arrive |
+            | s,g       | sabc,aeg,aeg   | depart,turn right,arrive |
+
+    Scenario: Not a Sliproad, road not continuing straight
+        Given the node map
+            """
+                    d
+                    .
+          s . a . . b . . c
+                `   .
+                  ` e . . g
+            """
+
+        And the ways
+            | nodes | highway | name  |
+            | sabc  | primary | sabc  |
+            | dbe   | primary | dbe   |
+            | aeg   | primary | aeg   |
+
+       When I route I should get
+            | waypoints | route        | turns                    |
+            | s,c       | sabc,sabc    | depart,arrive            |
+            | s,g       | sabc,aeg,aeg | depart,turn right,arrive |
+
+    Scenario: Intersection too far away with Traffic Light shortly after initial split
+    # This currently fails since our MAX_SLIPROAD_THRESHOLD is only checked for the way `a-t`.
+    # The traffic signal at t is detected as the first intersection after a on the obvious road.
+    # We have to skip traffic signals for distance calculation - wait till Moritz lands his GraphWalker for this.
+        Given the node map
+            """
+                                                                                                                                                                      d
+                                                                                                                                                                      .
+          s . a . . . . . . . . . . . . . t . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . b . . c
+               ` . . . . . . . . . .                                                                                                                                  .                   .
+                                      `  . . . . . . . . . .                                                                                                          .                                .
+                                                              `  . . . . . . . . . .                                                                                  .                                        .
+                                                                                      `  . . . . . . . . . .                                                          .                                                     .
+                                                                                                              `  . . . . . . . . . .                                  .                                                                 .
+                                                                                                                                      `  . . . . . . . . . .          .                                                                              .
+                                                                                                                                                              `  .    .                     .
+                                                                                                                                                                   `  e
+                                                                                                                                                                      .
+                                                                                                                                                                      f
+                                                                                                                                                                      .
+            """
+
+        And the nodes
+            | node | highway         |
+            | t    | traffic_signals |
+
+        And the ways
+            | nodes | highway | name |
+            | satbc | primary | sabc |
+            | dbef  | primary | dbef |
+            | ae    | primary | ae   |
+
+       When I route I should get
+            | waypoints | route             | turns                                      |
+            | s,f       | sabc,ae,dbef,dbef | depart,turn slight right,turn right,arrive |
+
+    Scenario: Traffic Signal on Sliproad
+        Given the node map
+            """
+                          d
+                          .
+          s . a . . . . . b . . c
+               `          .
+                  `       .
+                    `     .
+                      t   .
+                       `  .
+                        ` e
+                          .
+                          .
+                          f
+            """
+
+        And the nodes
+            | node | highway         |
+            | t    | traffic_signals |
+
+        And the ways
+            | nodes | highway | name  |
+            | sabc  | primary | sabc  |
+            | dbe   | primary | dbe   |
+            | ef    | primary | ef    |
+            | ate   | primary | ate   |
+
+       When I route I should get
+            | waypoints | route      | turns                    |
+            | s,f       | sabc,ef,ef | depart,turn right,arrive |
+
+    Scenario: Sliproad tagged as link
+        Given the node map
+            """
+                          d
+                          .
+          s . a . . . . . b . . c
+               `          .
+                  `       .
+                     `    .
+                       `  .
+                        ` .
+                          e
+                          .
+                          .
+                          f
+            """
+
+        And the ways
+            | nodes | highway       | name  |
+            | sabc  | motorway      | sabc  |
+            | dbef  | motorway      | dbef  |
+            | ae    | motorway_link | ae    |
+
+       When I route I should get
+            | waypoints | route          | turns                    |
+            | s,f       | sabc,dbef,dbef | depart,turn right,arrive |
+
+    Scenario: Sliproad with same-ish names
+        Given the node map
+            """
+                    d
+                    .
+          s . a . . b . . c
+               `    .
+                 .  e
+                  . .
+                   ..
+                    .
+                    f
+                    .
+                    t
+            """
+
+        And the ways
+            | nodes | highway | name     | ref   |
+            | sabc  | primary | main     |       |
+            | dbe   | primary | crossing | r0    |
+            | eft   | primary | crossing | r0;r1 |
+            | af    | primary | sliproad |       |
+
+       When I route I should get
+            | waypoints | route                  | turns                    |
+            | s,t       | main,crossing,crossing | depart,turn right,arrive |
+
+    Scenario: Not a Sliproad, name mismatch
+        Given the node map
+            """
+                    d
+                    .
+          s . a . . b . . c
+               `    .
+                 .  e
+                  . .
+                  . .
+                  . .
+                   ..
+                    .
+                    f
+                    .
+                    t
+            """
+
+        And the ways
+            | nodes | highway | name     |
+            | sabc  | primary | main     |
+            | dbe   | primary | top      |
+            | eft   | primary | bottom   |
+            | af    | primary | sliproad |
+
+       When I route I should get
+            | waypoints | route                       | turns                                  |
+            | s,t       | main,sliproad,bottom,bottom | depart,turn right,turn straight,arrive |
