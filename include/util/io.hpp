@@ -116,7 +116,6 @@ void deserializeAdjacencyArray(const std::string &filename,
                                std::vector<std::uint32_t> &offsets,
                                std::vector<simple_type> &data)
 {
-    std::ifstream in_stream(filename, std::ios::binary);
     storage::io::FileReader file(filename);
 
     file.DeserializeVector(offsets);
