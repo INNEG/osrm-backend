@@ -156,28 +156,6 @@ inline bool serializeFlags(const boost::filesystem::path &path, const std::vecto
     return static_cast<bool>(flag_stream);
 }
 
-inline bool deserializeFlags(const boost::filesystem::path &path, std::vector<bool> &flags)
-{
-    SimpleLogger().Write() << "Reading flags from " << path;
-    storage::io::FileReader flag_file(path, true);
-
-    const auto number_of_bits = flag_file.ReadOne<std::uint32_t>();
-    flags.resize(number_of_bits);
-    // putting bits in ints
-    std::uint32_t chunks = (number_of_bits + 31) / 32;
-    std::size_t bit_position = 0;
-    std::uint32_t chunk;
-    for (std::size_t chunk_id = 0; chunk_id < chunks; ++chunk_id)
-    {
-        flag_file.ReadInto(chunk);
-        std::bitset<32> chunk_bits(chunk);
-        for (std::size_t bit = 0; bit < 32 && bit_position < number_of_bits; ++bit, ++bit_position)
-            flags[bit_position] = chunk_bits[bit];
-    }
-    SimpleLogger().Write() << "Read " << number_of_bits << " bits in " << chunks
-                           << " Chunks from disk.";
-    return true;
-}
 } // namespace util
 } // namespace osrm
 
