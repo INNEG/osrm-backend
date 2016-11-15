@@ -40,8 +40,8 @@ void LengthLimitedCoordinateAccumulator::update(const NodeID from_node,
 
     // in case we get too many coordinates, we limit them to our desired length
     if (length + accumulated_length > max_length)
-        coordinate_extractor.TrimCoordinatesToLength(current_coordinates,
-                                                     max_length - accumulated_length);
+        current_coordinates = coordinate_extractor.TrimCoordinatesToLength(
+            std::move(current_coordinates), max_length - accumulated_length);
 
     coordinates.insert(coordinates.end(), current_coordinates.begin(), current_coordinates.end());
 
